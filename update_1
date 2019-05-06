@@ -1,0 +1,31 @@
+---
+ - name: Updating security patches on servers
+   hosts: all
+
+   handlers:
+
+     - name: Apply_update
+       shell: "{{ item }}"
+       with_items:
+           - sudo apt-get update
+   #        - sudo apt-get upgrade
+   #        - sudo apt-get dist-upgrade
+  #     when: ansible_distribution == 'Ubuntu'
+
+     - name: Reboot
+       shell: sudo shutdown -r now
+       async: 0
+       poll: 0
+       ignore_errors: true
+
+     - name: wait
+       local_action: wait_for port=22 host="{{ inventory_hostname }}" state=started
+
+   tasks:
+     - name: Applying packges
+       local_action: shell echo "{{ ansible_hostname }}, Rebooted" >> /home/ec2-user/log.txt
+       notify:
+         - Apply_update
+         - Reboot
+         - wait
+       when: ansible_distribution == 'Ubuntu' 
