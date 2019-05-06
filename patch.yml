@@ -10,7 +10,7 @@
            - sudo apt-get update
            - sudo apt-get upgrade
            - sudo DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' dist-upgrade
-
+       
      - name: Apply_update_Centos_amzon_REHL
        shell: "{{ item }}"
        with_items:
@@ -30,12 +30,14 @@
        notify:
          - Apply_update_ubuntu
        when: ansible_distribution == 'Ubuntu' 
-
+       ignore_errors: true
+       
      - name: Applying update on CentosAndRHEL
        local_action: shell echo "{{ inventory_hostname }}, Updated" >> /home/ec2-user/log.txt
        notify:
          - Apply_update_Centos_amzon_REHL
        when: ansible_distribution == "CentOS"
+       ignore_errors: true
  
      - meta: flush_handlers
  
@@ -43,4 +45,5 @@
        local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/Patched_log
        notify:
          - Reboot
-         - wait 
+         - wait
+       ignore_errors: true
