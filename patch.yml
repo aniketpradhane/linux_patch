@@ -14,7 +14,7 @@
      - name: Apply_update_Centos_amzon_REHL
        shell: "{{ item }}"
        with_items:
-           - sudo yum update
+           - sudo yum update -y
 
      - name: Reboot
        shell: sudo shutdown -r now
