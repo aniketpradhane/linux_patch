@@ -20,6 +20,7 @@
        shell: sudo shutdown -r now
        async: 1
        poll: 0
+       ignore_errors: true
 
      - name: wait
        local_action: wait_for port=22 host="{{ inventory_hostname }}" state=started
