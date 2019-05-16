@@ -16,16 +16,23 @@
        with_items:
            - sudo yum update -y
 
-     - name: Reboot
-       shell: sudo shutdown -r now
+     - name: restart_server
+       shell: sudo shutdown -r -t 5
        async: 1
-       poll: 0
+       poll: 1
        ignore_errors: true
 
      - name: wait
-       local_action: wait_for port=22 host="{{ inventory_hostname }}" state=started
+       local_action: wait_for port=22 host="{{ inventory_hostname }}" delay=80
 
    tasks:
+
+     - name: Checking_Packges
+       command: yum check-update
+       register: result_out
+       ignore_errors: yes
+
+
      - name: Applying packges
        local_action: shell echo "{{ inventory_hostname }}, Updated" >> /home/ec2-user/log.txt
        notify:
@@ -37,7 +44,8 @@
        local_action: shell echo "{{ inventory_hostname }}, Updated" >> /home/ec2-user/log.txt
        notify:
          - Apply_update_Centos_amzon_REHL
-       when: ansible_distribution == "CentOS"
+         - restart_server
+       when: ansible_distribution == "CentOS" and  result_out.rc == 100
        ignore_errors: true
  
      - meta: flush_handlers
@@ -45,6 +53,7 @@
      - name: Rebooting Servers
        local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/Patched_log
        notify:
-         - Reboot
+#         - restart_server
          - wait
+       when:    
        ignore_errors: true
