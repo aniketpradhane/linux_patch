@@ -33,7 +33,7 @@
        ignore_errors: yes
 
      - name: updating Change request
-       local_action: shell echo " Change Request Number for This Activity: {{ sr_number }}" > /home/ec2-user/logs/sr_logs
+       local_action: shell echo " Change Request Number for This Activity {{ sr_number }} " > /home/ec2-user/logs/sr_logs
   
      - name: Applying packges on Ubuntu servers
        local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/logs/patched_logs
