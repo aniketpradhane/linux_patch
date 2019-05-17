@@ -33,27 +33,37 @@
        ignore_errors: yes
 
 
-     - name: Applying packges
-       local_action: shell echo "{{ inventory_hostname }}, Updated" >> /home/ec2-user/log.txt
+     - name: Applying packges on Ubuntu servers
+       local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/logs/patched_logs
        notify:
          - Apply_update_ubuntu
        when: ansible_distribution == 'Ubuntu' 
        ignore_errors: true
        
      - name: Applying update on CentosAndRHEL
-       local_action: shell echo "{{ inventory_hostname }}, Updated" >> /home/ec2-user/log.txt
+       local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/logs/patched_log
        notify:
          - Apply_update_Centos_amzon_REHL
          - restart_server
+         - wait
        when: ansible_distribution == "CentOS" and  result_out.rc == 100
        ignore_errors: true
  
      - meta: flush_handlers
+     
+     - name: updating Change request
+       local_action: shell echo " {{ sr_number }}" > /home/ec2-user/logs/sr_logs
+
+
+     - name: Copy logs to S3 buckets
+       shell: aws s3 cp /home/ec2-user/logs/ s3://aniketbucket/logs --recursive
+       run_once: true
+       delegate_to: localhost
  
-     - name: Rebooting Servers
-       local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/Patched_log
-       notify:
+#     - name: Rebooting Servers
+#       local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/Patched_log
+#       notify:
 #         - restart_server
-         - wait
-       when:    
-       ignore_errors: true
+#         - wait
+#       when:    
+#       ignore_errors: true
