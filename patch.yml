@@ -32,7 +32,9 @@
        register: result_out
        ignore_errors: yes
 
-
+     - name: updating Change request
+       local_action: shell echo " {{ sr_number }}" > /home/ec2-user/logs/sr_logs
+  
      - name: Applying packges on Ubuntu servers
        local_action: shell echo "{{ inventory_hostname }}, Patched" >> /home/ec2-user/logs/patched_logs
        notify:
@@ -51,8 +53,8 @@
  
      - meta: flush_handlers
      
-     - name: updating Change request
-       local_action: shell echo " {{ sr_number }}" > /home/ec2-user/logs/sr_logs
+#     - name: updating Change request
+#       local_action: shell echo " {{ sr_number }}" > /home/ec2-user/logs/sr_logs
 
 
      - name: Copy logs to S3 buckets
