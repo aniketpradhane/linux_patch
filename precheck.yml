@@ -17,7 +17,7 @@
        ignore_errors: true
      
      - name: Copy logs to S3 buckets
-       shell: aws s3 cp /home/ec2-user/logs/packages_list s3://aniketbucket/logs --recursive
+       shell: aws s3 cp /home/ec2-user/logs/packages_list s3://aniketbucket
        run_once: true
        delegate_to: localhost
  
